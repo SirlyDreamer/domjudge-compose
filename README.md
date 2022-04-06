@@ -6,7 +6,7 @@
 
 DomJudge 介绍：https://www.domjudge.org/
 
-[!logo](https://www.domjudge.org/DOMjudgelogo.svg)
+![logo](https://www.domjudge.org/DOMjudgelogo.svg)
 
 ## 使用指南：
 
