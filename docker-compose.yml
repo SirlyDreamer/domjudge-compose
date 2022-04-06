@@ -1,0 +1,77 @@
+####################################################   NOTIFICATION   ####################################################
+# Due to the limitation that domserver is not able to cuntomize the judgehost password from environment,                 #
+# so we should create dj-mariadb and domserver first.                                                                    #
+# Just run this command:                                                                                                 #
+# $ docker-compose up -d dj-mariadb domserver                                                                            #
+#                                                                                                                        #
+# Then, run these command to get password:                                                                               #
+#                                                                                                                        #
+# TO GET ADMIN PASSWORD:                                                                                                 #
+# $ docker exec -it domserver cat /opt/domjudge/domserver/etc/initial_admin_password.secret                              #
+#                                                                                                                        #
+# TO GET JUDGEHOST PASSWORD:                                                                                             #
+# $ docker exec -it domserver cat /opt/domjudge/domserver/etc/restapi.secret                                             #
+#                                                                                                                        #
+# Fill it in judgehost.secret file.                                                                                      #
+#                                                                                                                        #
+# And then, run this to enable judgehost:                                                                                #
+# $ docker-compose up -d                                                                                                 #
+#                                                                                                                        #
+##########################################################################################################################
+
+services:
+  dj-mariadb:
+    container_name: dj-mariadb
+    image: mariadb:latest
+    restart: unless-stopped
+    ports:
+      - "13306:3306"
+    volumes:
+      - database:/var/lib/mysql
+    env-file: database.secret
+    environment:
+      - MYSQL_USER=domjudge
+      - MYSQL_DATABASE=domjudge
+      - CONTAINER_TIMEZONE=Asia/Shanghai
+    command: --max-connections=1000 --max-allowed-packet=1G --innodb-log-file-size=10G
+    healthcheck:
+      test: mysqladmin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 10s
+      interval: 5s
+      timeout: 1s
+      retries: 5
+
+  domserver:
+    container_name: domserver
+    image: domjudge/domserver:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    links:
+      - 'dj-mariadb:mariadb'
+    depends_on:
+      dj-mariadb: { condition: service_healthy }
+    env-file: database.secret
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_USER=domjudge
+      - MYSQL_DATABASE=domjudge
+      - CONTAINER_TIMEZONE=Asia/Shanghai
+
+  judgehost:
+    image: 'domjudge/judgehost:latest'
+    restart: unless-stopped
+    links:
+      - 'domserver:domserver'
+    depends_on:
+      domserver: { condition: service_healthy }
+    privileged: true
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    env-file: judgehost.secret
+    environment:
+      - CONTAINER_TIMEZONE=Asia/Shanghai
+    scale: 4
+
+volumes:
+  database:
