@@ -10,5 +10,5 @@ DomJudge 介绍：https://www.domjudge.org/
 
 ## 使用指南：
 
-详见：https://github.com/SirlyDreamer/domjudge-compose/wiki
+详见：https://github.com/SirlyDreamer/domjudge-compose/wiki/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker-compose%E4%BE%BF%E6%8D%B7%E7%9A%84%E9%83%A8%E7%BD%B2DomJudge
 
