@@ -80,6 +80,5 @@ services:
         delay: 5s
         max_attempts: 5
 
-
 volumes:
   database:
