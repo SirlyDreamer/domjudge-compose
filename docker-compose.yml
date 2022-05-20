@@ -1,23 +1,23 @@
-################################################   NOTIFICATION   ################################################
-# Due to the limitation that domserver is not able to cuntomize the judgehost password from environment,         #
-# so we should create dj-mariadb and domserver first.                                                            #
-# Just run this command:                                                                                         #
-# $ docker-compose up -d dj-mariadb domserver                                                                    #
-#                                                                                                                #
-# Then, run these command to get password:                                                                       #
-#                                                                                                                #
-# TO GET ADMIN PASSWORD:                                                                                         #
-# $ docker exec -it domserver cat /opt/domjudge/domserver/etc/initial_admin_password.secret                      #
-#                                                                                                                #
-# TO GET JUDGEHOST PASSWORD:                                                                                     #
-# $ docker exec -it domserver cat /opt/domjudge/domserver/etc/restapi.secret                                     #
-#                                                                                                                #
-# Fill it in judgehost.secret file.                                                                              #
-#                                                                                                                #
-# And then, run this to enable judgehost:                                                                        #
-# $ docker-compose up -d                                                                                         #
-#                                                                                                                #
-##################################################################################################################
+##############################################   NOTIFICATION   ##############################################
+# Due to the limitation that domserver is not able to cuntomize the judgehost password from environment,     #
+# so we should create dj-mariadb and domserver first.                                                        #
+# Just run this command:                                                                                     #
+# $ docker-compose up -d dj-mariadb domserver                                                                #
+#                                                                                                            #
+# Then, run these command to get password:                                                                   #
+#                                                                                                            #
+# TO GET ADMIN PASSWORD:                                                                                     #
+# $ docker exec -it domserver cat /opt/domjudge/domserver/etc/initial_admin_password.secret                  #
+#                                                                                                            #
+# TO GET JUDGEHOST PASSWORD:                                                                                 #
+# $ docker exec -it domserver cat /opt/domjudge/domserver/etc/restapi.secret                                 #
+#                                                                                                            #
+# Fill it in judgehost.secret file.                                                                          #
+#                                                                                                            #
+# And then, run this to enable judgehost:                                                                    #
+# $ docker-compose up -d                                                                                     #
+#                                                                                                            #
+##############################################################################################################
 version: "3.9"
 
 services:
