@@ -18,6 +18,7 @@
 # $ docker-compose up -d                                                                                         #
 #                                                                                                                #
 ##################################################################################################################
+version: "3.9"
 
 services:
   dj-mariadb:
@@ -33,7 +34,7 @@ services:
       - MYSQL_USER=domjudge
       - MYSQL_DATABASE=domjudge
       - CONTAINER_TIMEZONE=Asia/Shanghai
-    command: --max-connections=1000 --max-allowed-packet=1G --innodb-log-file-size=10G
+    command: --max-connections=1024 --max-allowed-packet=1G --innodb-log-file-size=512M
     healthcheck:
       test: mysqladmin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 10s
@@ -60,7 +61,6 @@ services:
 
   judgehost:
     image: 'domjudge/judgehost:latest'
-    restart: unless-stopped
     links:
       - 'domserver:domserver'
     depends_on:
@@ -71,7 +71,15 @@ services:
     env_file: judgehost.secret
     environment:
       - CONTAINER_TIMEZONE=Asia/Shanghai
-    scale: 4
+    deploy:
+      mode: replicated
+      replicas: 4
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+
 
 volumes:
   database:
