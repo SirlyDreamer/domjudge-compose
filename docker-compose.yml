@@ -28,7 +28,7 @@ services:
     ports:
       - "13306:3306"
     volumes:
-      - database:/var/lib/mysql
+      - ./database:/var/lib/mysql
     env_file: database.secret
     environment:
       - MYSQL_USER=domjudge
@@ -67,7 +67,7 @@ services:
       domserver: { condition: service_healthy }
     privileged: true
     volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     env_file: judgehost.secret
     environment:
       - CONTAINER_TIMEZONE=Asia/Shanghai
@@ -79,6 +79,3 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 5
-
-volumes:
-  database:
