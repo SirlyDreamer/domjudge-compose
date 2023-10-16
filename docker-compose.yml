@@ -36,7 +36,7 @@ services:
       - CONTAINER_TIMEZONE=Asia/Shanghai
     command: --max-connections=1024 --max-allowed-packet=1G --innodb-log-file-size=512M
     healthcheck:
-      test: mysqladmin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      test: mariadb-admin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 10s
       interval: 5s
       timeout: 1s
