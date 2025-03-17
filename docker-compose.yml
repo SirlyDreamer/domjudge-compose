@@ -12,13 +12,18 @@
 # TO GET JUDGEHOST PASSWORD:                                                                                 #
 # $ docker exec -it domserver cat /opt/domjudge/domserver/etc/restapi.secret                                 #
 #                                                                                                            #
-# Fill it in judgehost.secret file.                                                                          #
+# Fill it in judgehost.secret file. You may need:                                                            #
+#                                                                                                            #
+#   1. In /etc/default/grub, add 'cgroup_enable=memory swapaccount=1' to GRUB_CMDLINE_LINUX_DEFAULT.         #
+#       On modern distros (e.g. Debian bullseye and Ubuntu Jammy Jellyfish) which have cgroup v2             #
+#       enabled by default, you need to add 'systemd.unified_cgroup_hierarchy=0' as well.                    #
+#   2. Run update-grub                                                                                       #
+#   3. Reboot                                                                                                #
 #                                                                                                            #
 # And then, run this to enable judgehost:                                                                    #
 # $ docker-compose up -d                                                                                     #
 #                                                                                                            #
 ##############################################################################################################
-version: "3.9"
 
 services:
   dj-mariadb:
@@ -36,18 +41,18 @@ services:
       - CONTAINER_TIMEZONE=Asia/Shanghai
     command: --max-connections=1024 --max-allowed-packet=1G --innodb-log-file-size=512M
     healthcheck:
-      test: mariadb-admin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
-      start_period: 10s
-      interval: 5s
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 5s
+      interval: 3s
       timeout: 1s
-      retries: 5
+      retries: 3
 
   domserver:
     container_name: domserver
     image: domjudge/domserver:latest
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "12345:80"
     links:
       - 'dj-mariadb:mariadb'
     depends_on:
@@ -67,7 +72,7 @@ services:
       domserver: { condition: service_healthy }
     privileged: true
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup
     env_file: judgehost.secret
     environment:
       - CONTAINER_TIMEZONE=Asia/Shanghai
