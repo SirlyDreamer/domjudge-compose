@@ -22,7 +22,8 @@
 #                                                                                                            #
 # And then, run this to enable judgehost:                                                                    #
 # $ docker-compose up -d                                                                                     #
-#                                                                                                            #
+#
+# Line43: See https://github.com/DOMjudge/domjudge/issues/2848
 ##############################################################################################################
 
 services:
@@ -39,7 +40,7 @@ services:
       - MYSQL_USER=domjudge
       - MYSQL_DATABASE=domjudge
       - CONTAINER_TIMEZONE=Asia/Shanghai
-    command: --max-connections=1024 --max-allowed-packet=1G --innodb-log-file-size=512M
+    command: --max-connections=1024 --max-allowed-packet=1G --innodb-log-file-size=512M --innodb-snapshot-isolation=OFF
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 5s
@@ -84,3 +85,4 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 5
+
